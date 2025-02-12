@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+</head>
+<body>
+
+<h1 th:text="${message+' '+status}">Forbidden</h1>
+<div>You are not allowed to access  <a href="." th:href="@{${path}}">this page</a></div>
+<a href="/" th:href="@{/}">Back to Home Page</a>
+<a href="/logout">logout</a>
+<form method="post" action="/logout"><input type="submit"></form>
+<!--/*
+<table>
+    <tr th:each="var : ${#vars.getVariableNames()}">
+        <td th:text="${var}"></td>
+        <td th:text="${#vars.getVariable(var)}"></td>
+    </tr>
+</table>
+*/-->
+<h2>Welcome</h2>
+<p>Spring Security Thymeleaf tutorial</p>
+<div sec:authorize="hasRole('USER')">Text visible to user.</div>
+<div sec:authorize="hasRole('ADMIN')">Text visible to admin.</div>
+<div sec:authorize="isAuthenticated()">Text visible only to authenticated users.</div>
+<div> Authenticated username:<span sec:authentication="name"></span></div>
+<div>Authenticated user roles:<span sec:authentication="principal.authorities"></span></div>
+</body>
+</html>

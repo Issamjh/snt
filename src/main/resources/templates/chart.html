@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${appName+'/chart'}">Our App</title>
+    <link href="external/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="external/jquery-3.7.1.js"></script>
+    <script type="text/javascript" src="external/chart.js"></script>
+    <title>Charts</title>
+    <style>
+        body,html{
+            height: 100%;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+    </script>
+</head>
+<body>
+<div class="container ">
+    <h3 class="text-center">Films</h3>
+
+    <div class="row gap-2 ">
+        <div class="col">
+            <div class="card shadow"><canvas id="salesByCategory"></canvas></div>
+        </div>
+
+        <div class="col" >
+            <div class="card shadow"><canvas id="filmByLanguage"></canvas></div>
+
+        </div>
+    </div>
+    <div class="row m-4">
+        <div class="col d-flex justify-content-center">
+            <div class="card shadow p-2 " style="width:600px">
+
+                <canvas  id="filmByRentingTotal"></canvas>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    salesByCategoryData=function(salesByCategoryData){
+        new Chart(
+            document.getElementById('salesByCategory'),
+            {
+                type: 'line',
+                options: {
+                    plugins: {
+
+                        title: {
+                            display: true,
+                            text: 'Sales by Category'
+                        },
+                        legend: {
+                            display: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Count of Films'
+                            }
+                        }
+                    }
+                },
+                data: {
+                    labels: salesByCategoryData.map(row => row.category),
+                    datasets: [
+                        {
+                            label: 'Dataset1',
+                            data: salesByCategoryData.map(row => row.totalSales),
+                            borderColor: '#548822',
+                            backgroundColor: '#54FF22'
+                        }
+                    ]
+                }
+            }
+        );
+
+    }
+    filmByLanguage=function(filmByLanaguageData){
+        new Chart(
+            document.getElementById('filmByLanguage'),
+            {
+                type: 'bar',
+                options: {
+                    plugins: {
+
+                        title: {
+                            display: true,
+                            text: 'Sales by Category'
+                        },
+                        legend: {
+                            display: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Count of Films'
+                            }
+                        }
+                    }
+                },
+                data: {
+                    labels: filmByLanaguageData.map(row => row.languageName),
+                    datasets: [
+                        {
+                            label: 'Count',
+                            data: filmByLanaguageData.map(row => row.countFilm),
+                            borderColor: '#546388',
+                            backgroundColor: '#5463FF'
+                        }
+                    ]
+                }
+            }
+        );
+
+    }
+
+    filmByRentingTotal=function(filmByRentingTotalData){
+        new Chart(
+            document.getElementById('filmByRentingTotal'),
+            {
+                type: 'bubble',
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.dataset.data[context.dataIndex].title||' ';
+
+
+                                    return label+= " {customers:"+context.parsed.x+
+                                        ", total="+context.parsed.y+
+                                        ", unit:"+context.parsed._custom+"}";
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'How much clients paid for renting the films'
+                        },
+                        subtitle: {
+                            display: true,
+                            text: 'X: Price/Film, Y: count renting customers, R=Total (i.e. X*Y)'
+                        },
+                        legend: {
+                            display: false,
+                        }
+
+                    }
+                },
+                data: {
+
+                    datasets: [
+                        {
+                            borderColor: '#FF6384',
+                            backgroundColor: '#FFB1C1',
+                            label: '(price, customers, total)',
+                            data: filmByRentingTotalData.map(row => {
+                                return {
+                                    x: row.countRental,
+                                    y: Math.round(row.countRental * row.rentalRate),
+                                    r: row.rentalRate,
+                                    title: row.title
+                                };
+                            })
+                        }
+                    ]
+                },
+
+            }
+        );
+
+    }
+    $.ajax({
+        url: 'chart/salesByCategory',
+        method:"get",
+
+    }).done(function ( data ) {
+        salesByCategoryData(data);
+    }).fail(function ( xhr, status, error  ) {
+        alert(error);
+    });
+
+    $.ajax({
+        url: 'chart/filmByLanguage',
+        method:"get",
+
+    }).done(function ( data ) {
+        filmByLanguage(data);
+
+    }).fail(function ( xhr, status, error  ) {
+        alert(error);
+    });
+
+    $.ajax({
+        url: 'chart/filmByRentingTotal',
+        method:"get",
+
+    }).done(function ( data ) {
+        filmByRentingTotal(data);
+
+    }).fail(function ( xhr, status, error  ) {
+        alert(error);
+    });
+
+</script>
+
+<script type="text/javascript" src="external/popper.min.js"></script>
+<script type="text/javascript" src="external/bootstrap.bundle.min.js"></script>
+</body>
+</html>

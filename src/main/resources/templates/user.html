@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body,html{
+            height: 100%;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${appName+'/user'}"></title>
+    <link href="external/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="external/jquery-3.7.1.js"></script>
+    <script type="text/javascript">
+        var userList=new Map();
+        // UserProxy
+        class User{
+            #userData; // JSON Object
+            constructor(data){
+                this.#userData=data;
+            }
+
+            getName(){
+                return this.#userData.username;
+
+            }
+            getEmail(){
+                return this.#userData.email;
+
+            }
+            getEnabled(){
+                return this.#userData.enabled;
+
+            }
+            getCreationTime(){
+                return this.#userData.createTime;
+
+            }
+            getEnabledStatusTime(){
+                return this.#userData.enableTime;
+
+            }
+            setName(val){
+
+                this.#userData.username=val;
+
+
+            }
+            setEmail(val){
+
+                this.#userData.email=val;
+                updateName(this)
+
+            }
+            setEnabled(val){
+
+                this.#userData.enabled=val;
+
+
+            }
+            update(onSuccess){
+                var self=this;
+                $.ajax({
+                    data:{name:this.getName(),email:this.getEmail(),enabled:this.getEnabled()},
+                    method:"put",
+                    url:"user/update"
+
+                }).done(function ( data ) {
+                    self.#userData=data;
+                    if(onSuccess)
+                        onSuccess(data)
+
+                }).fail(function ( xhr, status, error  ) {
+                    alert(error);
+                    location.reload();
+                });
+            }
+        }
+        function render(user){
+            var el=$(".user#"+user.getName()).detach();
+            if(el.length===0){
+                el = '<li id="'+ user.getName()+'"'+
+                    ' class="user list-group-item" draggable="true"'+
+                    ' ondragstart="event.dataTransfer.setData(\'userName\',\''+ user.getName()+'\')">'
+                    +user.getName()+
+                    '</li>';
+
+            }
+
+            if(user.getEnabled()){
+                $("#enabled").append(el);
+
+            }else{
+
+                $("#disabled").append(el);
+            }
+
+        }
+
+        function renderAllUsers(){
+            $.ajax({
+                url: 'user/all-users',
+                method:"get",
+
+            }).done(function ( data ) {
+
+                data.sort(function(l,r){
+                    return l-r;
+                    ;
+                });
+                for(var item of data){
+                    var user=new User(item)
+                    userList.set(user.getName(),user);
+                    render(user);
+                }
+
+            }).fail(function ( xhr, status, error  ) {
+                alert(error);
+                location.reload();
+            });
+
+        };
+        function changeUserEnableState(){
+            var userName=event.dataTransfer.getData('userName')
+            var user=userList.get(userName);
+            user.setEnabled(!user.getEnabled());
+
+            render(user);
+            user.update();
+        }
+    </script>
+</head>
+<body>
+
+<div class="modal shadow " tabindex="-1" style="display:block">
+
+    <div class="modal-dialog modal-fullscreen">
+        <h3 class="text-center">Users</h3>
+        <div class="modal-content">
+
+            <div class="modal-body bg-light">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="container">
+                            <div class="card shadow"  ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';"
+                                 ondrop="changeUserEnableState()">
+                                <div class="card-title bg-primary text-light p-1  shadow">Active</div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush" id="enabled">
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col" >
+                        <div class="container">
+                            <div class="card shadow"  ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';"
+                                 ondrop="changeUserEnableState()" >
+                                <div class="card-title bg-light  p-1 shadow" >Non Active</div>
+                                <div class="card-body" >
+                                    <ul class="list-group list-group-flush" id="disabled">
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    renderAllUsers();
+
+</script>
+<script type="text/javascript" src="external/popper.min.js"></script>
+<script type="text/javascript" src="external/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
