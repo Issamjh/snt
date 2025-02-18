@@ -2,28 +2,30 @@ services:
   service_app:
     restart: always
     image: "issamjh/snt:latest"
+    depends_on:
+      - mysqldb
+
     ports:
       - 9080:9080
       - 9000-9080:9080
       - :9080
-    expose: #NECESSARY TO INTERNAL C0COMMUNICATION AMONG SERVICES OF THE CONTAINER
-      - 3306
+    #expose: #NECESSARY TO INTERNAL C0COMMUNICATION AMONG SERVICES OF THE CONTAINER
+    #  - 3306
     environment:
       - spring.datasource.url=jdbc:mysql://mysqldb:3306/sakila
-    depends_on:
-      - mysqldb
+
 
   mysqldb:
+    restart: always
     image: "mysql"
     ports:
       - :3306
     volumes:
-      - ./mysql-data:/var/lib/mysql rw
-      - ./mysql-init-files:/docker-entrypoint-initdb.d rw
-      - ./sakila.sql:/docker-entrypoint-initdb.d/init.sql ro
-
-    expose: #NECESSARY TO INTERNAL C0COMMUNICATION AMONG SERVICES OF THE CONTAINER
-      - 3306
+      - ./docker-scripts:/docker-entrypoint-initdb.d:rw
+      - ./mysql-data:/var/lib/mysql:rw
+      - ./sakila.sql:/docker-entrypoint-initdb.d/sakila.sql
+    #expose: #NECESSARY TO INTERNAL C0COMMUNICATION AMONG SERVICES OF THE CONTAINER
+    #  - 3306
     environment:
       MYSQL_DATABASE: sakila
       MYSQL_USER: admin
