@@ -27,9 +27,13 @@ The backend is a **Spring Boot service**, responsible for handling user manageme
 ## 📌 Key Concepts Demonstrated  
 - **Building a Spring Boot Application** ([Guide](https://spring.io/guides/gs/spring-boot))  
 - **Creating RESTful Services** using `@RestController` and JSON ([Guide](https://spring.io/guides/gs/rest-service))  
-- **Spring MVC Controllers** using `@Controller` ([Comparison](https://www.baeldung.com/spring-controller-vs-restcontroller))  
+- **Spring MVC Controllers**  using `@Controller` ([Comparison](https://www.baeldung.com/spring-controller-vs-restcontroller))  
 - **Accessing Data with JPA** ([Guide](https://spring.io/guides/gs/accessing-data-jpa))  
 - **Securing a Web Application** ([Guide](https://spring.io/guides/gs/securing-web))  
 - **Externalized Configuration** ([Docs](https://docs.spring.io/spring-boot/reference/features/external-config.html))  
 
 📌 For a detailed breakdown of the application tasks, see [this document](https://github.com/Issamjh/snt/blob/main/Advanced-Assignment-R_D.pdf).  
+
+### 🛠️ Testing the Application  
+To learn how to **test this application**, read the [README file](https://github.com/Issamjh/snt/blob/main/readme%20.txt), which provides step-by-step instructions.  
+
